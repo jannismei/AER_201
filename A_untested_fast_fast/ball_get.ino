@@ -1,0 +1,228 @@
+// all have delays: get_ball(), hopper_enter(), hopper_exitR(), hopper_exitL(), back_out(), arm_up(), drop_arm(),
+// get_ball_corner(), hopper_exitR_corner(), hopper_exitL_corner()
+
+// slight delay in hopper_exit to change motor direction
+// delays in arm_up, arm_down, lift_ball
+
+
+void get_ball() // gotta subtract 1 from the hopper location in the grid
+{
+/* This code runs after the robot is in the hopper,
+  and a ball is in the shovel. 
+  1. Drop the arm to the lowest elevation
+  2. Shimmies out (right motor on)
+  3. Lift arm slightly
+  4. Back out
+  5. Shimmy out (left motoro on)
+  6. Back out more
+*/
+//  drop_arm();
+  delay(1000);
+  hopper_exitR();
+
+  lift_ball_first_time();
+  Serial.println("in get_ball, about to return");
+  delay(1000);
+//  back_out();
+//  delay(1000);
+//  hopper_exitL();
+//  delay(1000);
+//  back_out();
+  return;
+}
+
+void get_ball_corner() // gotta subtract 1 from the hopper location in the grid
+{
+/* This code runs after the robot is in the hopper,
+  and a ball is in the shovel. 
+  1. Drop the arm to the lowest elevation
+  2. Shimmies out (right motor on)
+  3. Lift arm slightly
+  4. Back out
+  5. Shimmy out (left motoro on)
+  6. Back out more
+*/
+//  drop_arm();
+  delay(1000);
+  hopper_exitL_corner();
+
+  lift_ball_first_time();
+  delay(1000);
+  back_out();
+  delay(1000);
+  hopper_exitR_corner();
+  delay(1000);
+  back_out();
+  return;
+}
+
+
+// these functions are called in get_ball.
+
+int hopper_enter () { // this is for retrieveing the ball
+  // make both motors same speed
+  Serial.println("hopper_enter");
+  forwards_direction();
+ analogWrite(pin_speed_L,195);   
+ analogWrite(pin_speed_R,145); // don't know how long this takes, but can't write delay into here
+ // if writing delay here, then will not be able to process anything else
+ return 0;
+}
+
+int hopper_exitR()
+{
+ Serial.println("hopper_exitR");
+  backwards_direction();
+  stop_motors();
+  delay(50);
+ analogWrite(pin_speed_L,0);   // stronger bristles need 200 speed at first, for 400, and 120 for later
+ analogWrite(pin_speed_R,255); 
+delay(200);
+ analogWrite(pin_speed_L,0);   
+ analogWrite(pin_speed_R,160); 
+ delay(400);
+  stop_motors();
+  // don't know how long this takes, but can't write delay into here
+   // if writing delay here, then will not be able to process anything else
+ return 0;   
+}
+
+int hopper_exitL()
+{
+ Serial.println(" hopper_exitL ");
+  backwards_direction();
+  stop_motors();
+  delay(50);
+ analogWrite(pin_speed_L,140);   
+ analogWrite(pin_speed_R,0); 
+ delay(400);
+  stop_motors();
+  // don't know how long this takes, but can't write delay into here
+   // if writing delay here, then will not be able to process anything else
+ return 0;   
+}
+
+int hopper_exitR_corner()
+{
+ Serial.println(" hopper_exitL ");
+  backwards_direction();
+  stop_motors();
+  delay(50);
+ analogWrite(pin_speed_L,0);   
+ analogWrite(pin_speed_R,255); 
+ delay(300);
+ //analogWrite(pin_speed_L,0);   
+ //analogWrite(pin_speed_R,150); 
+ //delay(600);
+  stop_motors();
+  // don't know how long this takes, but can't write delay into here
+   // if writing delay here, then will not be able to process anything else
+ return 0;   
+}
+
+int hopper_exitL_corner()
+{
+ Serial.println("hopper_exitR");
+  backwards_direction();
+  stop_motors();
+  delay(50);
+ analogWrite(pin_speed_L,255);   // stronger bristles need 200 speed at first, for 400, and 120 for later
+ analogWrite(pin_speed_R,0); 
+delay(400);
+ analogWrite(pin_speed_L,150);   
+ analogWrite(pin_speed_R,0); 
+ delay(600);
+  stop_motors();
+  // don't know how long this takes, but can't write delay into here
+   // if writing delay here, then will not be able to process anything else
+ return 0;   
+}
+
+
+
+void back_out()
+{
+   Serial.println("\n back_out_function/hopper_exit");
+   backwards_direction(); 
+   
+  analogWrite(pin_speed_L,160);   
+ analogWrite(pin_speed_R,120); 
+ delay(800);
+  analogWrite(pin_speed_L,0);   
+  analogWrite(pin_speed_R,0);
+}
+
+int lift_ball()
+{
+    digitalWrite(pin_direction_pulley1, HIGH);
+    digitalWrite(pin_direction_pulley2, LOW); // maybe need to write something else?
+    analogWrite(pin_speed_pulley,200);
+    
+    Serial.println(" lift barely ");
+    delay(400);
+    analogWrite(pin_speed_pulley,0);
+    return 0;
+ 
+ 
+ return 0; 
+}
+
+int lift_ball_first_time()
+{
+    digitalWrite(pin_direction_pulley1, HIGH);
+    digitalWrite(pin_direction_pulley2, LOW); // maybe need to write something else?
+    analogWrite(pin_speed_pulley,200);
+    
+    Serial.println(" lift barely/lift_ball_first_time ");
+    delay(700);
+    analogWrite(pin_speed_pulley,0);
+    return 0;
+ 
+ 
+ return 0; 
+}
+
+int arm_up()
+{
+    digitalWrite(pin_direction_pulley1, LOW); // may need to add another direction pin
+    digitalWrite(pin_direction_pulley2, HIGH);
+    arm_high = digitalRead(pin_pulley_top); 
+    Serial.print("pin pulley up reading " );
+    Serial.print(arm_high);
+   while (arm_high == 0){
+     
+      arm_low = digitalRead(arm_low_pin);
+      arm_high = digitalRead(arm_high_pin);
+      digitalWrite(arm_D1, HIGH);
+      digitalWrite(arm_D2, LOW);
+      analogWrite(pin_speed_arm, 240);
+      Serial.print(" going to the otp Arm High Pin:");
+      Serial.print(arm_high);
+      Serial.print("\n");
+    }
+    
+    analogWrite(pin_speed_arm,0);
+}
+
+int drop_arm() /// may need to check this
+{
+    digitalWrite(pin_direction_pulley1, HIGH);
+    digitalWrite(pin_direction_pulley2, LOW);
+    arm_low = digitalRead(pin_pulley_bottom);
+    
+    while (arm_low == 0){
+      arm_low = digitalRead(arm_low_pin);
+      arm_high = digitalRead(arm_high_pin);
+      
+      
+      digitalWrite(arm_D1, LOW);
+      digitalWrite(arm_D2, HIGH);
+      analogWrite(pin_speed_arm, 100);
+      Serial.print(" dropping Arm Low Pin:");
+      Serial.print(arm_low);
+      Serial.print("\n");
+    }
+    
+    analogWrite(pin_speed_arm, 0);
+    return 0;
+}
